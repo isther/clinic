@@ -1,0 +1,30 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.1-alpine
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=clinic
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "0.0.0.0:5432:5432"
+
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    links:
+      - postgres:postgres
+    depends_on:
+      - postgres
+    volumes:
+      - ./data/static:/static
+      - ./data/logs:/logs
+    ports:
+      - "0.0.0.0:9000:8080"

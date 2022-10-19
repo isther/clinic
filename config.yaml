@@ -1,0 +1,12 @@
+dev: false
+log_level: "info"
+base_url: "/"
+listen: "0.0.0.0:8080"
+db:
+  host: "postgres"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
+  db_name: "clinic"
+  ssl_mode: "disable"
+  time_zone: "Asia/Shanghai"
