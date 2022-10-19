@@ -20,8 +20,12 @@ func Init() *gin.Engine {
 		userGroup.POST("/query", api.NewUserFormApi().Query)
 	}
 
-	// adminGroup := router.Group("/admin")
-	// TODO: admin api
+	adminGroup := router.Group("/admin")
+	{ // TODO: admin api
+		adminGroup.POST("/put/done", api.NewAdminFormApi().Done)
+		adminGroup.POST("/get/todo", api.NewAdminFormApi().GetTodo)
+		adminGroup.POST("/get/history", api.NewAdminFormApi().GetHistory)
+	}
 
 	return router
 }

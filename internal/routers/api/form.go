@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/isther/clinic/internal/dao"
 	"github.com/isther/clinic/internal/model"
 	"github.com/sirupsen/logrus"
@@ -26,6 +27,9 @@ func (api *UserFormApi) Create(c *gin.Context) {
 		return
 	}
 
+	newForm.FormID = uuid.New().String()
+	newForm.Status = false
+
 	if tx := dao.DB.Create(&model.FormSql{
 		Form: newForm,
 	}); tx.Error != nil {
@@ -43,11 +47,10 @@ func (api *UserFormApi) Create(c *gin.Context) {
 }
 
 func (api *UserFormApi) Query(c *gin.Context) {
-	type query struct {
-		ID string `json:"id"`
-	}
+	newQuery := &struct {
+		StudentID string `json:"student_id"`
+	}{}
 
-	var newQuery = new(query)
 	if err := c.ShouldBind(newQuery); err != nil {
 		logrus.Error(err)
 		c.JSON(http.StatusOK, gin.H{
@@ -57,7 +60,7 @@ func (api *UserFormApi) Query(c *gin.Context) {
 	}
 
 	var formSqls []model.FormSql
-	if tx := dao.DB.Where("student_id = ?", newQuery.ID).Find(&formSqls); tx.Error != nil {
+	if tx := dao.DB.Where("student_id = ?", newQuery.StudentID).Find(&formSqls); tx.Error != nil {
 		logrus.Error(tx.Error)
 		c.JSON(http.StatusOK, gin.H{
 			"msg": tx.Error,
