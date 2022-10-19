@@ -1,6 +1,6 @@
-dev: false
+dev: true
 log_level: "info"
-base_url: "/"
+base_url: "/api/"
 listen: "0.0.0.0:8080"
 db:
   host: "postgres"

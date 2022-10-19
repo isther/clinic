@@ -13,6 +13,7 @@ func Init() *gin.Engine {
 			"message": "pong",
 		})
 	})
+
 	userGroup := router.Group("/user")
 	{
 		userGroup.POST("/create", api.NewUserFormApi().Create)

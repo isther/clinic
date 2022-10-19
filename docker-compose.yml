@@ -2,7 +2,9 @@ version: "3"
 services:
   postgres:
     container_name: postgres
-    image: postgres:14.1-alpine
+    build: 
+      context: ./postgres
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - ./data/postgres:/var/lib/postgresql/data

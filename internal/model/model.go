@@ -9,12 +9,12 @@ type User struct {
 }
 
 type Form struct {
-	User         User   `json:"user" gorm:"embedded"`
+	User         `json:"user"`
 	Content      string `json:"content" gorm:"content"`
 	ExpectedTime string `json:"expected_time" gorm:"expected_time"`
 }
 
 type FormSql struct {
 	gorm.Model
-	Form Form `json:"form" gorm:"embedded"`
+	Form `json:"form"`
 }

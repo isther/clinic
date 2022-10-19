@@ -26,7 +26,7 @@ func initSQL() {
 	}
 
 	// 绑定模型
-	err = DB.AutoMigrate(model.FormSql{})
+	err = DB.AutoMigrate(&model.FormSql{})
 	if err != nil {
 		logrus.Fatalln(err)
 	}
