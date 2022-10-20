@@ -5,9 +5,8 @@ import "gorm.io/gorm"
 type User struct {
 	Name        string `json:"name" gorm:"name"`
 	StudentID   string `json:"student_id" gorm:"student_id"`
-	PhoneNumber string `json:"phone_number" gorm:"phone_number"`
-	QQ          string `json:"qq" gorm:"qq"`
-	Wechat      string `json:"wechat" gorm:"wechat"`
+	ContactInfo string `json:"contact_info" gorm:"contact_info"`
+	ContactWay  string `json:"contact_way" gorm:"contact_way"`
 }
 
 type Form struct {
