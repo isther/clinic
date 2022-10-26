@@ -10,3 +10,4 @@ db:
   db_name: "clinic"
   ssl_mode: "disable"
   time_zone: "Asia/Shanghai"
+img_dir: "/img"

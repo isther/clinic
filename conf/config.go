@@ -35,6 +35,7 @@ type server struct {
 		SSLMode  string `yaml:"ssl_mode"`
 		TimeZone string `yaml:"time_zone"`
 	} `yaml:"db"`
+	ImgDir string `yaml:"img_dir"`
 }
 
 func (s *server) DSN() string {

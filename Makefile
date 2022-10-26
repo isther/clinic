@@ -10,7 +10,7 @@ down:
 logs:
 	@docker logs backend
 
-clean:
+clean: down
 	@sudo rm -rf data
 	@sudo rm -rf logs
 

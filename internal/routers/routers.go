@@ -14,14 +14,16 @@ func Init() *gin.Engine {
 		})
 	})
 
+	router.MaxMultipartMemory = 8 << 20
 	userGroup := router.Group("/user")
 	{
 		userGroup.POST("/create", api.NewUserFormApi().Create)
 		userGroup.POST("/query", api.NewUserFormApi().Query)
+		userGroup.POST("/upload", api.NewUserFormApi().Upload)
 	}
 
 	adminGroup := router.Group("/admin")
-	{ // TODO: admin api
+	{ // admin api
 		adminGroup.POST("/put/done", api.NewAdminFormApi().Done)
 		adminGroup.GET("/get/todo", api.NewAdminFormApi().GetTodo)
 		adminGroup.GET("/get/history", api.NewAdminFormApi().GetHistory)

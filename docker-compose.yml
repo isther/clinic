@@ -2,7 +2,7 @@ version: "3"
 services:
   postgres:
     container_name: postgres
-    build: 
+    build:
       context: ./postgres
       dockerfile: Dockerfile
     restart: always
@@ -26,7 +26,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./data/static:/static
       - ./data/logs:/logs
+      - ./data/img:/img
     ports:
       - "0.0.0.0:9000:8080"

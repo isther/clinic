@@ -3,9 +3,11 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/isther/clinic/conf"
 	"github.com/isther/clinic/internal/dao"
 	"github.com/isther/clinic/internal/model"
 	"github.com/sirupsen/logrus"
@@ -72,5 +74,44 @@ func (api *UserFormApi) Query(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"msg": "ok",
 		"res": formSqls,
+	})
+}
+
+func (api *UserFormApi) Upload(c *gin.Context) {
+	form, _ := c.MultipartForm()
+
+	var (
+		err     error
+		imgs    model.Strs
+		form_id = form.Value["form_id"]
+		files   = form.File["upload[]"]
+	)
+
+	for _, file := range files {
+		imgName := uuid.New().String()
+		err = c.SaveUploadedFile(file, filepath.Join(conf.Server.ImgDir, imgName))
+		if err == nil {
+			imgs = append(imgs, imgName)
+		}
+	}
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+
+	var formSql model.FormSql
+	if tx := dao.DB.Model(&model.FormSql{}).Where("form_id = ?", form_id).Update("imgs", imgs).Find(&formSql); tx.Error != nil {
+		logrus.Error(tx.Error)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": tx.Error,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"msg":  fmt.Sprintf("%d files uploaded!\n", len(imgs)),
+		"form": formSql,
 	})
 }
