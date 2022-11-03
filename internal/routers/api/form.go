@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,7 @@ func (api *UserFormApi) Create(c *gin.Context) {
 	}
 
 	newForm.FormID = uuid.New().String()
-	newForm.Status = false
+	newForm.Status = "0"
 
 	if tx := dao.DB.Create(&model.FormSql{
 		Form: newForm,
@@ -44,7 +45,8 @@ func (api *UserFormApi) Create(c *gin.Context) {
 
 	logrus.Info(fmt.Sprintf("Create Form: %#v", newForm))
 	c.JSON(http.StatusOK, gin.H{
-		"msg": "ok",
+		"msg":     "ok",
+		"form_id": newForm.FormID,
 	})
 }
 
@@ -88,7 +90,7 @@ func (api *UserFormApi) Upload(c *gin.Context) {
 	)
 
 	for _, file := range files {
-		imgName := uuid.New().String()
+		imgName := uuid.New().String() + path.Ext(file.Filename)
 		err = c.SaveUploadedFile(file, filepath.Join(conf.Server.ImgDir, imgName))
 		if err == nil {
 			imgs = append(imgs, imgName)
@@ -102,6 +104,15 @@ func (api *UserFormApi) Upload(c *gin.Context) {
 	}
 
 	var formSql model.FormSql
+	if tx := dao.DB.Where("form_id = ?", form_id).First(&formSql); tx.Error != nil {
+		logrus.Error(tx.Error)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": tx.Error,
+		})
+		return
+	}
+
+	imgs = append(formSql.Imgs, imgs...)
 	if tx := dao.DB.Model(&model.FormSql{}).Where("form_id = ?", form_id).Update("imgs", imgs).Find(&formSql); tx.Error != nil {
 		logrus.Error(tx.Error)
 		c.JSON(http.StatusOK, gin.H{

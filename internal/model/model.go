@@ -18,7 +18,7 @@ type Form struct {
 	Content      string        `json:"content" gorm:"content"`             // 问题
 	ContentType  string        `json:"content_type" gorm:"content_type"`   // 问题类型
 	ExpectedTime string        `json:"expected_time" gorm:"expected_time"` // 期望时间
-	Status       bool          `json:"status" gorm:"status"`               // 当前状态
+	Status       string        `json:"status" gorm:"status"`               // 当前状态
 	Imgs         Strs          `json:"imgs" gorm:"imgs"`
 }
 
@@ -39,10 +39,3 @@ func (s *Strs) Scan(value interface{}) error {
 func (s Strs) Value() (driver.Value, error) {
 	return json.Marshal(s)
 }
-
-// func (s *Strs) Append(value string) {
-// var strs = []string(*s)
-// strs = append(strs, value)
-
-// *s = Strs(strs)
-// }

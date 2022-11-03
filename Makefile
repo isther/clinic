@@ -1,7 +1,7 @@
-run: down remove_image
+run: clean remove_image
 	@docker-compose up -d
 
-debug: down clean remove_image
+debug: down remove_image
 	@docker-compose up -d
 
 down:

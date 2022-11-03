@@ -16,9 +16,10 @@ func NewAdminFormApi() *AdminFormApi {
 	return &AdminFormApi{}
 }
 
-func (api *AdminFormApi) Done(c *gin.Context) {
+func (api *AdminFormApi) Status(c *gin.Context) {
 	var newQuery = &struct {
 		FormID string `json:"form_id"`
+		Status string `json:"status"`
 	}{}
 
 	if err := c.ShouldBind(newQuery); err != nil {
@@ -30,7 +31,7 @@ func (api *AdminFormApi) Done(c *gin.Context) {
 	}
 
 	var formSql model.FormSql
-	if tx := dao.DB.Model(&model.FormSql{}).Where("form_id = ?", newQuery.FormID).Update("status", "true").Find(&formSql); tx.Error != nil {
+	if tx := dao.DB.Model(&model.FormSql{}).Where("form_id = ?", newQuery.FormID).Update("status", newQuery.Status).Find(&formSql); tx.Error != nil {
 		logrus.Error(tx.Error)
 		c.JSON(http.StatusOK, gin.H{
 			"msg": tx.Error,
@@ -45,9 +46,9 @@ func (api *AdminFormApi) Done(c *gin.Context) {
 	})
 }
 
-func (api *AdminFormApi) GetTodo(c *gin.Context) {
+func (api *AdminFormApi) GetUnreviewed(c *gin.Context) {
 	var formSqls []model.FormSql
-	if tx := dao.DB.Where("status = ?", false).Find(&formSqls); tx.Error != nil {
+	if tx := dao.DB.Where("status = ?", "0").Find(&formSqls); tx.Error != nil {
 		logrus.Error(tx.Error)
 		c.JSON(http.StatusOK, gin.H{
 			"msg": tx.Error,
@@ -62,9 +63,43 @@ func (api *AdminFormApi) GetTodo(c *gin.Context) {
 	})
 }
 
-func (api *AdminFormApi) GetHistory(c *gin.Context) {
+func (api *AdminFormApi) GetReviewed(c *gin.Context) {
 	var formSqls []model.FormSql
-	if tx := dao.DB.Where("status = ?", true).Find(&formSqls); tx.Error != nil {
+	if tx := dao.DB.Where("status = ?", "1").Find(&formSqls); tx.Error != nil {
+		logrus.Error(tx.Error)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": tx.Error,
+		})
+		return
+	}
+
+	logrus.Info(fmt.Sprintf("Get Todo: %#v", formSqls))
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+		"res": formSqls,
+	})
+}
+
+func (api *AdminFormApi) GetCannot(c *gin.Context) {
+	var formSqls []model.FormSql
+	if tx := dao.DB.Where("status = ?", "2").Find(&formSqls); tx.Error != nil {
+		logrus.Error(tx.Error)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": tx.Error,
+		})
+		return
+	}
+
+	logrus.Info(fmt.Sprintf("Get Todo: %#v", formSqls))
+	c.JSON(http.StatusOK, gin.H{
+		"msg": "ok",
+		"res": formSqls,
+	})
+}
+
+func (api *AdminFormApi) GetDone(c *gin.Context) {
+	var formSqls []model.FormSql
+	if tx := dao.DB.Where("status = ?", "3").Find(&formSqls); tx.Error != nil {
 		logrus.Error(tx.Error)
 		c.JSON(http.StatusOK, gin.H{
 			"msg": tx.Error,
